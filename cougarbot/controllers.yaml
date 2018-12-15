@@ -1,0 +1,6 @@
+arm_controller:
+  type: "position_controllers/JointTrajectoryController"
+  joints:
+    - body1_to_body2
+    - body2_to_body3
+    - tcp

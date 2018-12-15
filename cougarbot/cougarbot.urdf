@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<robot name="cougarbot">
+  <link name="world"/>
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size = "0.6 0.1 0.2"/>
+      </geometry>
+      <material name="silver">
+        <color rgba="0.75 0.75 0.75 1"/>
+      </material>
+      <origin rpy="0 0 0" xyz="0 0 0.1"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size = "0.6 0.1 0.2"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0.1"/>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <origin rpy="0 0 0" xyz="0 0 0.1"/>
+      <inertia ixx="0.0027" iyy="0.0027" izz="0.005" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+  <joint name="base_to_body1" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint>
+  <link name="body1">
+    <visual>
+      <geometry>
+        <box size = "0.6 0.1 0.2"/>
+      </geometry>
+      <material name="silver">
+        <color rgba="0.75 0.75 0.75 1"/>
+      </material>
+      <origin rpy="0 0 1.571" xyz="0.0 0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size = "0.6 0.1 0.2"/>
+      </geometry>
+      <origin rpy="0 0 1.571" xyz="0.0 0.0 0.0"/>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <origin rpy="0 0 0" xyz="0.2 0.2 0.02"/>
+      <inertia ixx="0.0027" iyy="0.0027" izz="0.005" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+  <joint name="body1_to_body2" type="prismatic">
+    <axis xyz="1 0 0"/>
+    <parent link="base_link"/>
+    <child link="body1"/>
+    <limit lower="-.3" upper="0.00" effort="100" velocity="100" />
+    <origin rpy="0 0 0" xyz="0.2 0.2 0.3"/>
+  </joint>
+  <link name="body2">
+    <visual>
+      <geometry>
+        <box size = "0.6 0.1 0.2"/>
+      </geometry>
+      <material name="silver">
+        <color rgba="0.75 0.75 0.75 1"/>
+      </material>
+      <origin rpy="0 1.571 1.571" xyz="0.0 0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size = "0.6 0.1 0.2"/>
+      </geometry>
+      <origin rpy="0 1.571 1.571" xyz="0.0 0.0 0.0"/>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <origin rpy="0 0 0" xyz="0 0 0.025"/>
+      <inertia ixx="0.0027" iyy="0.0027" izz="0.005" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+  <joint name="body2_to_body3" type="prismatic">
+    <axis xyz="0 1 0"/>
+    <parent link="body1"/>
+    <child link="body2"/>
+    <limit lower="-.2" upper="0.00" effort="100" velocity="100" />
+    <origin rpy="0 0 0" xyz="-0.1 0.2 0.1"/>
+  </joint>
+  <link name="body3">
+    <visual>
+      <geometry>
+        <box size="0.1 0.1 0.1"/>
+      </geometry>
+      <material name="silver"/>
+      <origin rpy="0 1.571 1.571" xyz="0.0 0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.1 0.1 0.1"/>
+      </geometry>
+      <origin rpy="0 1.571 1.571" xyz="0.0 0.0 0.0"/>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <origin rpy="0 0 0" xyz="0 0 0.025"/>
+      <inertia ixx="0.0027" iyy="0.0027" izz="0.005" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+  <joint name="tcp" type="prismatic">
+    <axis xyz="0 0 1"/>
+    <parent link="body2"/>
+    <child link="body3"/>
+    <limit lower="-.2" upper="0.2" effort="100" velocity="100" />
+    <origin rpy="0 0 0" xyz="-0.1 0.0 0.0"/>
+  </joint>
+ <transmission name="tran0">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="body1_to_body2">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor0">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="tran1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="body2_to_body3">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor1">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="tran2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="tcp">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor2">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+ <gazebo>
+    <plugin name="control" filename="libgazebo_ros_control.so"/>
+  </gazebo>
+  <gazebo>
+    <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
+      <jointName>body1_to_body2,body2_to_body3,tcp</jointName>
+    </plugin>
+  </gazebo>
+</robot>

@@ -1,0 +1,6 @@
+controller_list:
+  - name: fake_arm_controller
+    joints:
+      - body1_to_body2
+      - body2_to_body3
+      - tcp
